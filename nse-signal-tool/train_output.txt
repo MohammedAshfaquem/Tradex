@@ -1,0 +1,221 @@
+<frozen runpy>:128: RuntimeWarning: 'backend.ml.train' found in sys.modules after import of package 'backend.ml', but prior to execution of 'backend.ml.train'; this may result in unpredictable behaviour
+WARNING: nsepython not installed. F&O data will return neutral values.
+Starting ML model training...
+Training on 30 stocks: TCS, INFY, WIPRO, HCLTECH, TECHM, HDFCBANK, ICICIBANK, SBIN, KOTAKBANK, AXISBANK, RELIANCE, ONGC, NTPC, POWERGRID, BPCL, MARUTI, TATAMOTORS, M&M, BAJAJ-AUTO, EICHERMOT, HINDUNILVR, ITC, NESTLEIND, SUNPHARMA, DRREDDY, LT, BHARTIARTL, ASIANPAINT, TATASTEEL, HINDALCO
+Fetching data for TCS...
+[FETCH] Fetching NSE data for TCS (1d, 3y)
+[RETRY 1/3] - waiting 1.9s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.6s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for TCS, using synthetic data
+  [OK] Added 756 samples from TCS
+Fetching data for INFY...
+[FETCH] Fetching NSE data for INFY (1d, 3y)
+[RETRY 1/3] - waiting 1.6s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.5s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for INFY, using synthetic data
+  [OK] Added 756 samples from INFY
+Fetching data for WIPRO...
+[FETCH] Fetching NSE data for WIPRO (1d, 3y)
+[RETRY 1/3] - waiting 1.9s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.2s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for WIPRO, using synthetic data
+  [OK] Added 756 samples from WIPRO
+Fetching data for HCLTECH...
+[FETCH] Fetching NSE data for HCLTECH (1d, 3y)
+[RETRY 1/3] - waiting 1.8s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.9s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for HCLTECH, using synthetic data
+  [OK] Added 756 samples from HCLTECH
+Fetching data for TECHM...
+[FETCH] Fetching NSE data for TECHM (1d, 3y)
+[RETRY 1/3] - waiting 1.3s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.4s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for TECHM, using synthetic data
+  [OK] Added 756 samples from TECHM
+Fetching data for HDFCBANK...
+[FETCH] Fetching NSE data for HDFCBANK (1d, 3y)
+[RETRY 1/3] - waiting 1.1s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.8s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for HDFCBANK, using synthetic data
+  [OK] Added 756 samples from HDFCBANK
+Fetching data for ICICIBANK...
+[FETCH] Fetching NSE data for ICICIBANK (1d, 3y)
+[RETRY 1/3] - waiting 1.6s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.4s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for ICICIBANK, using synthetic data
+  [OK] Added 756 samples from ICICIBANK
+Fetching data for SBIN...
+[FETCH] Fetching NSE data for SBIN (1d, 3y)
+[RETRY 1/3] - waiting 1.4s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.5s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for SBIN, using synthetic data
+  [OK] Added 756 samples from SBIN
+Fetching data for KOTAKBANK...
+[FETCH] Fetching NSE data for KOTAKBANK (1d, 3y)
+[RETRY 1/3] - waiting 1.3s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.5s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for KOTAKBANK, using synthetic data
+  [OK] Added 756 samples from KOTAKBANK
+Fetching data for AXISBANK...
+[FETCH] Fetching NSE data for AXISBANK (1d, 3y)
+[RETRY 1/3] - waiting 1.8s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.8s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for AXISBANK, using synthetic data
+  [OK] Added 756 samples from AXISBANK
+Fetching data for RELIANCE...
+[FETCH] Fetching NSE data for RELIANCE (1d, 3y)
+[RETRY 1/3] - waiting 1.9s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 3.0s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for RELIANCE, using synthetic data
+  [OK] Added 756 samples from RELIANCE
+Fetching data for ONGC...
+[FETCH] Fetching NSE data for ONGC (1d, 3y)
+[RETRY 1/3] - waiting 1.0s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.1s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for ONGC, using synthetic data
+  [OK] Added 756 samples from ONGC
+Fetching data for NTPC...
+[FETCH] Fetching NSE data for NTPC (1d, 3y)
+[RETRY 1/3] - waiting 1.8s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.1s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for NTPC, using synthetic data
+  [OK] Added 756 samples from NTPC
+Fetching data for POWERGRID...
+[FETCH] Fetching NSE data for POWERGRID (1d, 3y)
+[RETRY 1/3] - waiting 1.7s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 3.0s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for POWERGRID, using synthetic data
+  [OK] Added 756 samples from POWERGRID
+Fetching data for BPCL...
+[FETCH] Fetching NSE data for BPCL (1d, 3y)
+[RETRY 1/3] - waiting 1.3s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.1s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for BPCL, using synthetic data
+  [OK] Added 756 samples from BPCL
+Fetching data for MARUTI...
+[FETCH] Fetching NSE data for MARUTI (1d, 3y)
+[RETRY 1/3] - waiting 1.4s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.0s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for MARUTI, using synthetic data
+  [OK] Added 756 samples from MARUTI
+Fetching data for TATAMOTORS...
+[FETCH] Fetching NSE data for TATAMOTORS (1d, 3y)
+[RETRY 1/3] - waiting 1.6s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.4s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for TATAMOTORS, using synthetic data
+  [OK] Added 756 samples from TATAMOTORS
+Fetching data for M&M...
+[FETCH] Fetching NSE data for M&M (1d, 3y)
+[RETRY 1/3] - waiting 1.4s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.0s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for M&M, using synthetic data
+  [OK] Added 756 samples from M&M
+Fetching data for BAJAJ-AUTO...
+[FETCH] Fetching NSE data for BAJAJ-AUTO (1d, 3y)
+[RETRY 1/3] - waiting 1.6s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 3.0s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for BAJAJ-AUTO, using synthetic data
+  [OK] Added 756 samples from BAJAJ-AUTO
+Fetching data for EICHERMOT...
+[FETCH] Fetching NSE data for EICHERMOT (1d, 3y)
+[RETRY 1/3] - waiting 1.1s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.5s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for EICHERMOT, using synthetic data
+  [OK] Added 756 samples from EICHERMOT
+Fetching data for HINDUNILVR...
+[FETCH] Fetching NSE data for HINDUNILVR (1d, 3y)
+[RETRY 1/3] - waiting 1.7s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.2s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for HINDUNILVR, using synthetic data
+  [OK] Added 756 samples from HINDUNILVR
+Fetching data for ITC...
+[FETCH] Fetching NSE data for ITC (1d, 3y)
+[RETRY 1/3] - waiting 1.6s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.2s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for ITC, using synthetic data
+  [OK] Added 756 samples from ITC
+Fetching data for NESTLEIND...
+[FETCH] Fetching NSE data for NESTLEIND (1d, 3y)
+[RETRY 1/3] - waiting 1.5s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.6s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for NESTLEIND, using synthetic data
+  [OK] Added 756 samples from NESTLEIND
+Fetching data for SUNPHARMA...
+[FETCH] Fetching NSE data for SUNPHARMA (1d, 3y)
+[RETRY 1/3] - waiting 1.9s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.5s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for SUNPHARMA, using synthetic data
+  [OK] Added 756 samples from SUNPHARMA
+Fetching data for DRREDDY...
+[FETCH] Fetching NSE data for DRREDDY (1d, 3y)
+[RETRY 1/3] - waiting 1.6s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.2s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for DRREDDY, using synthetic data
+  [OK] Added 756 samples from DRREDDY
+Fetching data for LT...
+[FETCH] Fetching NSE data for LT (1d, 3y)
+[RETRY 1/3] - waiting 1.4s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.2s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for LT, using synthetic data
+  [OK] Added 756 samples from LT
+Fetching data for BHARTIARTL...
+[FETCH] Fetching NSE data for BHARTIARTL (1d, 3y)
+[RETRY 1/3] - waiting 1.9s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.8s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for BHARTIARTL, using synthetic data
+  [OK] Added 756 samples from BHARTIARTL
+Fetching data for ASIANPAINT...
+[FETCH] Fetching NSE data for ASIANPAINT (1d, 3y)
+[RETRY 1/3] - waiting 1.5s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.8s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for ASIANPAINT, using synthetic data
+  [OK] Added 756 samples from ASIANPAINT
+Fetching data for TATASTEEL...
+[FETCH] Fetching NSE data for TATASTEEL (1d, 3y)
+[RETRY 1/3] - waiting 1.9s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.5s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for TATASTEEL, using synthetic data
+  [OK] Added 756 samples from TATASTEEL
+Fetching data for HINDALCO...
+[FETCH] Fetching NSE data for HINDALCO (1d, 3y)
+[RETRY 1/3] - waiting 1.4s... (Error: Expecting value: line 1 column 1 (char 0))
+[RETRY 2/3] - waiting 2.0s... (Error: Expecting value: line 1 column 1 (char 0))
+[FALLBACK] NSE API failed for HINDALCO, using synthetic data
+  [OK] Added 756 samples from HINDALCO
+
+Total samples: 22680
+Features shape: (22680, 37)
+Labels distribution: {0: 16654, 1: 6026}
+Scale pos weight: 2.76
+
+Performing walk-forward validation...
+  Fold 1: Accuracy=0.634, Precision=0.313, Recall=0.338, F1=0.325
+  Fold 2: Accuracy=0.627, Precision=0.320, Recall=0.405, F1=0.358
+  Fold 3: Accuracy=0.623, Precision=0.332, Recall=0.344, F1=0.338
+  Fold 4: Accuracy=0.642, Precision=0.322, Recall=0.343, F1=0.332
+  Fold 5: Accuracy=0.607, Precision=0.317, Recall=0.409, F1=0.357
+
+============================================================
+WALK-FORWARD VALIDATION RESULTS
+============================================================
+Average Accuracy:  0.627
+Average Precision: 0.321
+Average Recall:    0.368
+Average F1 Score:  0.342
+============================================================
+
+Training final model on all data...
+
+[OK] Model saved to C:\Users\Afi\Desktop\Tradex Signal\nse-signal-tool\backend\ml\model.pkl
+
+Top 10 Feature Importances:
+  1. close_loc: 0.0661
+  2. price_ema50_cross: 0.0335
+  3. bb_lower: 0.0318
+  4. bb_middle: 0.0316
+  5. ema50: 0.0312
+  6. ema200: 0.0311
+  7. ema21: 0.0310
+  8. bb_upper: 0.0309
+  9. obv_ema: 0.0295
+  10. month: 0.0281

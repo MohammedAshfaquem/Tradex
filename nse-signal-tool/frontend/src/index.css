@@ -1,0 +1,269 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Dark theme (default) */
+  :root, .dark {
+    --bg-primary: #09090b;
+    --bg-secondary: #111115;
+    --bg-tertiary: #18181b;
+    --bg-border: #27272a;
+    --text-primary: #fafafa;
+    --text-secondary: #a1a1aa;
+    --text-muted: #71717a;
+  }
+
+  /* Light theme */
+  .light {
+    --bg-primary: #f8f9fc;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f0f1f5;
+    --bg-border: #e2e4ea;
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --text-muted: #9ca3af;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    @apply font-sans antialiased min-h-screen relative;
+  }
+
+  .dark body, :root body {
+    @apply selection:bg-accent-primary/30 selection:text-white;
+    background-image: radial-gradient(circle at 15% 50%, rgba(10, 132, 255, 0.04), transparent 25%),
+                      radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.04), transparent 25%);
+  }
+
+  .light body {
+    @apply selection:bg-accent-primary/20 selection:text-gray-900;
+    background-image: none;
+  }
+
+  * {
+    border-color: var(--bg-border);
+  }
+}
+
+@layer components {
+  /* Premium Glass Cards */
+  .premium-card {
+    @apply relative backdrop-blur-xl border rounded-2xl p-6 transition-all duration-300 overflow-hidden;
+    background-color: color-mix(in srgb, var(--bg-secondary) 40%, transparent);
+    border-color: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+  }
+  
+  .premium-card::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent pointer-events-none;
+  }
+
+  .premium-card-hover {
+    @apply premium-card hover:-translate-y-1 cursor-pointer;
+    transition: all 0.3s;
+  }
+  .premium-card-hover:hover {
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6), 0 0 10px rgba(10, 132, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-panel {
+    @apply backdrop-blur-2xl border-b shadow-lg;
+    background-color: color-mix(in srgb, var(--bg-primary) 60%, transparent);
+    border-color: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Button Styles */
+  .btn-primary {
+    @apply relative bg-gradient-to-r from-accent-primary to-blue-500 text-white px-5 py-2.5 rounded-xl font-semibold hover:px-6 active:scale-95 transition-all duration-300 shadow-glow-primary overflow-hidden;
+  }
+  
+  .btn-primary::after {
+    content: '';
+    @apply absolute top-0 left-[-100%] w-[50%] h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-[-20deg] transition-all duration-500;
+  }
+  .btn-primary:hover::after {
+    @apply left-[200%];
+  }
+
+  .btn-secondary {
+    @apply backdrop-blur-md border border-white/10 text-text-primary px-5 py-2.5 rounded-xl font-medium hover:bg-white/5 transition-all duration-200;
+    background-color: color-mix(in srgb, var(--bg-tertiary) 50%, transparent);
+  }
+
+  /* Gradient Signal Badges */
+  .signal-badge {
+    @apply relative inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold tracking-wider overflow-hidden shadow-sm;
+  }
+
+  .signal-badge-buy {
+    @apply signal-badge bg-gradient-to-r from-emerald-500/20 to-teal-400/20 text-emerald-400 border border-emerald-500/30 shadow-glow-success;
+  }
+
+  .signal-badge-sell {
+    @apply signal-badge bg-gradient-to-r from-rose-500/20 to-red-500/20 text-rose-400 border border-rose-500/30 shadow-glow-danger;
+  }
+
+  .signal-badge-watch {
+    @apply signal-badge bg-gradient-to-r from-amber-500/20 to-orange-400/20 text-amber-400 border border-amber-500/30 shadow-glow-warning;
+  }
+
+  .signal-badge-skip {
+    @apply signal-badge bg-bg-tertiary text-text-muted border border-white/10;
+  }
+
+  /* Input Styles */
+  .premium-input {
+    @apply w-full backdrop-blur-sm border rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:ring-1 transition-all duration-200 shadow-inner;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  .premium-input:focus {
+    border-color: rgba(10, 132, 255, 0.5);
+    --tw-ring-color: rgba(10, 132, 255, 0.5);
+  }
+  .premium-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.5;
+  }
+
+  /* Metric Card */
+  .metric-label {
+    @apply text-text-secondary text-sm font-medium tracking-widest uppercase mb-1 flex items-center gap-2;
+  }
+
+  .metric-value {
+    @apply text-4xl font-extrabold tracking-tight mt-1 bg-clip-text text-transparent bg-gradient-to-br from-white to-text-secondary;
+  }
+
+  /* Table Styles */
+  .table-row-premium {
+    @apply border-b border-white/5 hover:bg-white/[0.02] transition-colors duration-200;
+  }
+
+  .table-header-premium {
+    @apply border-b border-white/10 text-left font-semibold text-text-muted uppercase tracking-widest text-[10px] bg-black/40 backdrop-blur-md sticky top-0 z-10;
+  }
+
+  /* Data Grid Glow Fill */
+  .progress-bar-glass {
+    @apply flex-1 bg-black/40 rounded-full h-1.5 overflow-hidden border border-white/5 relative;
+  }
+
+  .progress-fill-buy {
+    @apply h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-300 shadow-glow-success transition-all duration-500;
+  }
+  .progress-fill-sell {
+    @apply h-full rounded-full bg-gradient-to-r from-rose-400 to-red-400 shadow-glow-danger transition-all duration-500;
+  }
+  .progress-fill-watch {
+    @apply h-full rounded-full bg-gradient-to-r from-amber-400 to-orange-400 shadow-glow-warning transition-all duration-500;
+  }
+
+  /* Skeleton Loader */
+  .skeleton {
+    @apply bg-white/5 animate-pulse rounded-full;
+  }
+
+  /* Status Indicator */
+  .status-dot {
+    @apply w-2 h-2 rounded-full relative;
+  }
+  
+  .status-dot::after {
+    content: '';
+    @apply absolute -inset-1 rounded-full animate-ping opacity-75;
+  }
+
+  .status-online {
+    @apply status-dot bg-accent-success shadow-glow-success;
+  }
+  .status-online::after {
+    @apply bg-accent-success/50;
+  }
+
+  .status-offline {
+    @apply status-dot bg-text-muted;
+  }
+  .status-offline::after {
+    display: none;
+  }
+}
+
+/* Custom Scrollbar Premium */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* Firefox Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+
+/* ===== LIGHT THEME OVERRIDES ===== */
+.light .premium-card {
+  @apply bg-white border-gray-200 shadow-md;
+}
+.light .premium-card::before {
+  display: none;
+}
+
+.light .glass-panel {
+  @apply bg-white/90 border-b border-gray-200 shadow-sm;
+}
+
+.light .table-row-premium {
+  @apply border-b border-gray-100 hover:bg-gray-50;
+}
+
+.light .table-header-premium {
+  @apply border-b border-gray-200 bg-gray-50 text-gray-500;
+}
+
+.light .progress-bar-glass {
+  @apply bg-gray-200 border-gray-300;
+}
+
+.light .skeleton {
+  @apply bg-gray-200;
+}
+
+.light .metric-value {
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-gray-900 to-gray-600;
+}
+
+.light .btn-secondary {
+  @apply bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200;
+}
+
+.light .premium-input {
+  @apply bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-accent-primary/50;
+}
+
+.light ::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.15);
+}
+.light ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.25);
+}
+.light {
+  scrollbar-color: rgba(0,0,0,0.15) transparent;
+}

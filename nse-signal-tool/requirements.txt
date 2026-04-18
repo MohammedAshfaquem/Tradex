@@ -1,0 +1,31 @@
+# Core dependencies
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+python-dotenv>=1.0.0
+
+# Data fetching
+yfinance>=0.2.35
+nsepython>=2.2
+feedparser>=6.0.11
+
+# Data analysis (compatible with Python 3.13)
+pandas>=2.0.0
+numpy>=1.23.0
+pandas-ta>=0.3.14
+
+# Machine learning
+xgboost>=2.0.0
+scikit-learn>=1.0.0
+
+# Database (compatible with Python 3.13)
+sqlalchemy>=2.0.30
+
+# LLM integration
+google-generativeai>=0.3.0
+
+# WebSocket
+websockets>=12.0
+
+# Additional utilities
+requests>=2.31.0
+python-multipart>=0.0.6
