@@ -111,9 +111,9 @@ def calculate_confidence(
     # 5. News Sentiment (max 10 pts)
     breakdown["news"] = max(-5, min(10, news_score))
 
-    # 6. ML Model (max 20 pts) - Increased weight for ML predictions
-    ml_score = int(ml_probability * 20)
-    breakdown["ml"] = max(0, min(20, ml_score))
+    # 6. ML Model (max 20 pts) - Symmetric: bearish predictions subtract, bullish add
+    ml_score = int((ml_probability - 0.5) * 40)  # 0.0→-20, 0.5→0, 1.0→+20
+    breakdown["ml"] = max(-20, min(20, ml_score))
 
     # 7. Multi-timeframe Agreement (max 15 pts, min -15 pts)
     breakdown["timeframe"] = max(-15, min(15, timeframe_agreement))
@@ -146,12 +146,21 @@ def calculate_confidence(
         breakdown["bonuses"] = bonuses
 
     # Normalize to 0-100 scale mapping 0 to 50
-    # Range is roughly -45 to +140
+    # Dynamically compute max possible score based on what data sources contributed
+    # This prevents penalizing signals when F&O or news data is unavailable
+    max_possible = 35 + 15 + 10 + 20 + 15  # tech + patterns + volume + ml + timeframe = 95 (always available)
+    if abs(fno_score) > 0:
+        max_possible += 10  # F&O contributed
+    if abs(news_score) > 0:
+        max_possible += 10  # News contributed
+    max_possible += 18  # max bonuses
+
     if total_confidence >= 0:
-        confidence_pct = int(50 + (total_confidence / 140) * 50)
+        confidence_pct = int(50 + (total_confidence / max_possible) * 50)
     else:
         # Negative scores map to 0-50
-        confidence_pct = int(50 - abs(total_confidence / 45) * 50)
+        min_possible = 80  # approximate negative floor (tech -23 + patterns -10 + vol -2 + fno -8 + news -5 + ml -20 + tf -15)
+        confidence_pct = int(50 + (total_confidence / min_possible) * 50)
         
     confidence_pct = max(0, min(100, confidence_pct))
 

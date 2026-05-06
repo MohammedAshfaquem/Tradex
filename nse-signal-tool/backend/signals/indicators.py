@@ -1,7 +1,11 @@
 import pandas as pd
-import pandas_ta as ta
 from typing import Dict, Any
 import warnings
+
+try:
+    import pandas_ta as ta  # pyright: ignore[reportMissingImports]
+except ImportError:
+    ta = None
 
 # Suppress pandas FutureWarnings about deprecated methods
 warnings.filterwarnings('ignore', category=FutureWarning)
@@ -21,6 +25,33 @@ def calculate_indicators(df: pd.DataFrame) -> Dict[str, Any]:
         - stoch_score: 0-5 points (NEW)
         - total_score: sum of all scores (max 35 points)
     """
+    if ta is None:
+        return {
+            "rsi_value": 50,
+            "rsi_score": 0,
+            "macd_value": 0,
+            "macd_signal": 0,
+            "macd_histogram": 0,
+            "macd_score": 0,
+            "ema9": 0,
+            "ema21": 0,
+            "ema50": 0,
+            "ema_score": 0,
+            "bb_upper": 0,
+            "bb_middle": 0,
+            "bb_lower": 0,
+            "bb_score": 0,
+            "vwap": 0,
+            "vwap_score": 0,
+            "adx": 0,
+            "adx_score": 0,
+            "stoch_k": 0,
+            "stoch_d": 0,
+            "stoch_score": 0,
+            "total_score": 0,
+            "error": "pandas_ta not installed"
+        }
+
     if df.empty or len(df) < 50:
         return {
             "rsi_value": 50,
@@ -114,6 +145,13 @@ def calculate_indicators(df: pd.DataFrame) -> Dict[str, Any]:
                     macd_score = -4 if i == 1 else -2
                     break
 
+            # Sustained momentum: MACD above/below signal without recent crossover
+            if macd_score == 0:
+                if macd_value > macd_signal and macd_histogram > 0:
+                    macd_score = 2  # Sustained bullish momentum
+                elif macd_value < macd_signal and macd_histogram < 0:
+                    macd_score = -2  # Sustained bearish momentum
+
         # EMAs (9, 21, 50)
         df['ema9'] = ta.ema(df['close'], length=9)
         df['ema21'] = ta.ema(df['close'], length=21)
@@ -123,12 +161,16 @@ def calculate_indicators(df: pd.DataFrame) -> Dict[str, Any]:
         ema21 = df['ema21'].iloc[-1] if not pd.isna(df['ema21'].iloc[-1]) else 0
         ema50 = df['ema50'].iloc[-1] if not pd.isna(df['ema50'].iloc[-1]) else 0
 
-        # EMA Score: All aligned bullish=5, 2 aligned=3, mixed=0
+        # EMA Score: All aligned bullish=5, 2 aligned=3, all bearish=-5, 2 bearish=-3
         ema_score = 0
         if ema9 > ema21 > ema50:
             ema_score = 5
+        elif ema9 < ema21 < ema50:
+            ema_score = -5
         elif (ema9 > ema21) or (ema21 > ema50):
             ema_score = 3
+        elif (ema9 < ema21) or (ema21 < ema50):
+            ema_score = -3
 
         # Bollinger Bands
         bb = ta.bbands(df['close'], length=20, std=2)

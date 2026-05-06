@@ -11,7 +11,8 @@ feedparser>=6.0.11
 # Data analysis (compatible with Python 3.13)
 pandas>=2.0.0
 numpy>=1.23.0
-pandas-ta>=0.3.14
+# Optional: pandas_ta indicators (backend falls back to neutral values if unavailable)
+# pandas-ta>=0.3.14
 
 # Machine learning
 xgboost>=2.0.0

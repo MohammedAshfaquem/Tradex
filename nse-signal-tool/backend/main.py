@@ -127,28 +127,43 @@ def _generate_signal_sync(symbol: str, timeframe: str = "1d") -> dict:
         timeframe_agreement = 0
         try:
             df_1h = get_stock_data(symbol, timeframe="1h", period="60d")
-            df_15m = get_stock_data(symbol, timeframe="15m", period="60d")
+            df_15m = get_stock_data(symbol, timeframe="15m", period="7d")
             tf_score = 0
-            if not df_1h.empty:
+            if not df_1h.empty and len(df_1h) >= 50:
                 ind_1h = calculate_indicators(df_1h)
-                if ind_1h.get('total_score', 0) >= 10: tf_score += 9
-                elif ind_1h.get('total_score', 0) <= -10: tf_score -= 9
-            if not df_15m.empty:
+                ts_1h = ind_1h.get('total_score', 0)
+                if ts_1h >= 15: tf_score += 9
+                elif ts_1h >= 10: tf_score += 6
+                elif ts_1h >= 5: tf_score += 3
+                elif ts_1h <= -15: tf_score -= 9
+                elif ts_1h <= -10: tf_score -= 6
+                elif ts_1h <= -5: tf_score -= 3
+            if not df_15m.empty and len(df_15m) >= 50:
                 ind_15m = calculate_indicators(df_15m)
-                if ind_15m.get('total_score', 0) >= 10: tf_score += 6
-                elif ind_15m.get('total_score', 0) <= -10: tf_score -= 6
+                ts_15m = ind_15m.get('total_score', 0)
+                if ts_15m >= 15: tf_score += 6
+                elif ts_15m >= 10: tf_score += 4
+                elif ts_15m >= 5: tf_score += 2
+                elif ts_15m <= -15: tf_score -= 6
+                elif ts_15m <= -10: tf_score -= 4
+                elif ts_15m <= -5: tf_score -= 2
             timeframe_agreement = tf_score
         except Exception as e:
             print(f"Error fetching multi-timeframe for {symbol}: {e}")
 
         # 10. Calculate final confidence
+        # Use the better of: LLM news_score (contextual) or keyword sentiment (always available)
+        # If LLM returned a non-zero news_score, use it; otherwise use keyword analysis
+        llm_news = llm_analysis.get('news_score', 0)
+        final_news_score = llm_news if llm_news != 0 else news_score
+
         confidence, signal, breakdown = calculate_confidence(
             symbol=symbol,
             indicators=indicators,
             patterns=patterns,
             volume_data=volume_data,
             fno_data=fno_data,
-            news_score=llm_analysis.get('news_score', news_score),
+            news_score=final_news_score,
             ml_probability=ml_prob,
             timeframe_agreement=timeframe_agreement
         )

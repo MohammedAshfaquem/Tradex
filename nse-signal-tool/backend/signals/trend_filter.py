@@ -1,6 +1,7 @@
 import pandas as pd
 from data.fetcher import get_stock_data
 import time
+import yfinance as yf
 
 _trend_cache = {"timestamp": 0, "status": "neutral"}
 CACHE_TTL = 3600  # 1 hour
@@ -16,7 +17,7 @@ def get_market_trend() -> str:
         return _trend_cache["status"]
         
     try:
-        # Fetch NIFTY 50 data
+        # Fetch NIFTY 50 data — use ^NSEI directly (no .NS suffix)
         df = get_stock_data("^NSEI", timeframe="1d", period="3mo")
         if df.empty:
             return "neutral"

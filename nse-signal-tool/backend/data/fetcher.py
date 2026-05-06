@@ -52,11 +52,11 @@ def _fetch_nse_data(symbol: str, timeframe: str = "1d", days_back: int = 1825, r
     Returns:
         DataFrame with OHLCV data from NSE or synthetic fallback
     """
-    # Add .NS suffix for NSE stocks
-    yf_symbol = f"{symbol}.NS"
-    
-    end_date = datetime.now()
-    start_date = end_date - timedelta(days=days_back)
+    # Add .NS suffix for NSE stocks (but not for index symbols like ^NSEI)
+    if symbol.startswith("^"):
+        yf_symbol = symbol
+    else:
+        yf_symbol = f"{symbol}.NS"
 
     # Map timeframe to yfinance interval
     interval_map = {
@@ -68,8 +68,13 @@ def _fetch_nse_data(symbol: str, timeframe: str = "1d", days_back: int = 1825, r
     interval = interval_map.get(timeframe, "1d")
 
     # yfinance has limitations on historical data for intraday
-    if interval in ["15m", "1h"] and days_back > 60:
-        days_back = 60  # Max 60 days for intraday data
+    if interval == "15m" and days_back > 7:
+        days_back = 7   # Max 7 days for 15m data (yfinance hard limit)
+    elif interval == "1h" and days_back > 60:
+        days_back = 60  # Max 60 days for 1h intraday data
+
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=days_back)
 
     for attempt in range(retries):
         try:
@@ -93,7 +98,11 @@ def _fetch_nse_data(symbol: str, timeframe: str = "1d", days_back: int = 1825, r
                     print(f"[RETRY {attempt + 1}/{retries}] {symbol} - waiting {backoff:.1f}s...")
                     time.sleep(backoff)
                     continue
-                # Use synthetic fallback
+                # Only use synthetic fallback for daily timeframe
+                # For intraday (15m, 1h), return empty to avoid polluting signals with fake data
+                if interval in ["15m", "1h"]:
+                    print(f"[SKIP] No intraday ({interval}) data for {symbol}, skipping (no synthetic)")
+                    return pd.DataFrame()
                 print(f"[FALLBACK] No data for {symbol}, using synthetic data")
                 return generate_synthetic_stock_data(symbol, days=days_back, seed=hash(symbol) % 10000)
 
@@ -140,6 +149,9 @@ def _fetch_nse_data(symbol: str, timeframe: str = "1d", days_back: int = 1825, r
                 print(f"[RETRY {attempt + 1}/{retries}] - waiting {backoff:.1f}s... (Error: {str(e)[:80]})")
                 time.sleep(backoff)
             else:
+                if interval in ["15m", "1h"]:
+                    print(f"[SKIP] No intraday ({interval}) data for {symbol}, skipping (no synthetic)")
+                    return pd.DataFrame()
                 print(f"[FALLBACK] yfinance failed for {symbol}, using synthetic data")
                 logger.error(f"Failed to fetch {symbol}: {e}")
                 return generate_synthetic_stock_data(symbol, days=days_back, seed=hash(symbol) % 10000)
@@ -183,6 +195,7 @@ def get_stock_data(symbol: str, timeframe: TimeFrame = "1d", period: str = "3y",
         "6mo": 180,
         "60d": 60,
         "30d": 30,
+        "7d": 7,
         "1d": 1
     }
     days_back = period_map.get(period, 1095)

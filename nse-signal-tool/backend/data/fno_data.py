@@ -1,13 +1,17 @@
 import pandas as pd
 from typing import Dict, Any
 
-# Try to import nsepython functions
+# Try to import nsepython functions (API changed in v2.97+)
 NSEPYTHON_AVAILABLE = False
 try:
-    from nsepython import nse_optionchain_expiry_dates, nse_optionchain_scrapper
+    from nsepython import option_chain, expiry_list, nse_optionchain_scrapper
     NSEPYTHON_AVAILABLE = True
 except ImportError:
-    print("WARNING: nsepython not installed. F&O data will return neutral values.")
+    try:
+        from nsepython import nse_optionchain_expiry_dates as expiry_list, nse_optionchain_scrapper, option_chain
+        NSEPYTHON_AVAILABLE = True
+    except ImportError:
+        print("WARNING: nsepython not installed. F&O data will return neutral values.")
 
 
 def get_fno_data(symbol: str) -> Dict[str, Any]:
@@ -38,24 +42,14 @@ def get_fno_data(symbol: str) -> Dict[str, Any]:
         return neutral_data
 
     try:
-        # Fetch options chain
-        expiry_dates = nse_optionchain_expiry_dates(symbol)
+        # Fetch options chain using nsepython v2.97+ API
+        oc = option_chain(symbol)
 
-        if not expiry_dates or len(expiry_dates) == 0:
-            print(f"INFO: No expiry dates found for {symbol}")
-            return neutral_data
-
-        # Get nearest expiry
-        nearest_expiry = expiry_dates[0]
-
-        # Fetch options chain data
-        option_chain = nse_optionchain_scrapper(symbol, nearest_expiry)
-
-        if not option_chain or 'records' not in option_chain:
+        if not oc or 'records' not in oc:
             print(f"INFO: No option chain data for {symbol}")
             return neutral_data
 
-        records = option_chain['records']['data']
+        records = oc['records']['data']
 
         # Calculate PCR and OI
         total_call_oi = 0

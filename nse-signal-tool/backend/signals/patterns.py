@@ -1,6 +1,10 @@
 import pandas as pd
-import pandas_ta as ta
 from typing import Dict, Any, List
+
+try:
+    import pandas_ta as ta  # pyright: ignore[reportMissingImports]
+except ImportError:
+    ta = None
 
 
 def detect_patterns(df: pd.DataFrame) -> Dict[str, Any]:
@@ -42,16 +46,17 @@ def detect_patterns(df: pd.DataFrame) -> Dict[str, Any]:
                 "error": None
             }
 
-        # Pattern detection using pandas_ta
-        # Bullish patterns
-        df['cdl_engulfing'] = ta.cdl_pattern(df['open'], df['high'], df['low'], df['close'], name='engulfing')
-        df['cdl_morningstar'] = ta.cdl_pattern(df['open'], df['high'], df['low'], df['close'], name='morningstar')
-        df['cdl_hammer'] = ta.cdl_pattern(df['open'], df['high'], df['low'], df['close'], name='hammer')
-        df['cdl_doji'] = ta.cdl_pattern(df['open'], df['high'], df['low'], df['close'], name='doji')
+        # Optional pandas_ta pattern outputs; manual detection below remains primary.
+        if ta is not None and hasattr(ta, 'cdl_pattern'):
+            # Bullish patterns
+            df['cdl_engulfing'] = ta.cdl_pattern(df['open'], df['high'], df['low'], df['close'], name='engulfing')
+            df['cdl_morningstar'] = ta.cdl_pattern(df['open'], df['high'], df['low'], df['close'], name='morningstar')
+            df['cdl_hammer'] = ta.cdl_pattern(df['open'], df['high'], df['low'], df['close'], name='hammer')
+            df['cdl_doji'] = ta.cdl_pattern(df['open'], df['high'], df['low'], df['close'], name='doji')
 
-        # Bearish patterns
-        df['cdl_shootingstar'] = ta.cdl_pattern(df['open'], df['high'], df['low'], df['close'], name='shootingstar')
-        df['cdl_eveningstar'] = ta.cdl_pattern(df['open'], df['high'], df['low'], df['close'], name='eveningstar')
+            # Bearish patterns
+            df['cdl_shootingstar'] = ta.cdl_pattern(df['open'], df['high'], df['low'], df['close'], name='shootingstar')
+            df['cdl_eveningstar'] = ta.cdl_pattern(df['open'], df['high'], df['low'], df['close'], name='eveningstar')
 
         # Manual pattern detection as backup
         last_idx = -1
@@ -146,7 +151,7 @@ def detect_patterns(df: pd.DataFrame) -> Dict[str, Any]:
             current_price = df['close'].iloc[-1]
             
             # Calculate ATR for dynamic tolerance
-            atr = ta.atr(df['high'], df['low'], df['close'], length=14)
+            atr = ta.atr(df['high'], df['low'], df['close'], length=14) if ta is not None else None
             if atr is not None and not atr.empty and not pd.isna(atr.iloc[-1]):
                 tolerance = atr.iloc[-1] * 0.5
             else:

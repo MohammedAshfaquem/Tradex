@@ -177,10 +177,10 @@ def create_features(df: pd.DataFrame) -> pd.DataFrame:
     df['target_return'] = df['atr'] / df['close']
     df['target_return'] = df['target_return'].clip(lower=0.01, upper=0.04)
 
-    # Dead zone: ignore signals where future move is within noise range (< 0.5 * ATR%)
+    # Dead zone: ignore signals where future move is within noise range
     # BUY = 1 when future return exceeds target, SELL/HOLD = 0 otherwise
     # Drop rows where move is too small (noise) to improve signal quality
-    noise_threshold = df['target_return'] * 0.15
+    noise_threshold = df['target_return'] * 0.4
     df['label'] = (df['future_return'] > df['target_return']).astype(int)
     # Mark noise rows for removal (weak moves that confuse the model)
     df['is_noise'] = (df['future_return'].abs() < noise_threshold)
@@ -233,32 +233,32 @@ def train_model():
     print(f"\nTotal samples: {len(combined_df)}")
 
     feature_cols = [
-        # Momentum indicators
-        'rsi_14', 'rsi_9', 'rsi_21', 'macd', 'macd_signal', 'macd_hist',
+        # Momentum indicators (relative/normalized - these generalize across stocks)
+        'rsi_14', 'rsi_9', 'rsi_21', 'macd_hist',
         'stoch_k', 'stoch_d',
-        # Trend indicators
-        'ema9', 'ema21', 'ema50', 'ema200', 'adx',
-        # Volatility indicators
-        'bb_upper', 'bb_lower', 'bb_middle', 'bb_width', 'bb_pct', 'atr',
-        # Volume indicators
-        'volume_ratio', 'volume_trend', 'obv', 'obv_ema',
-        # Price action
+        # Trend indicators (relative)
+        'adx',
+        # Volatility indicators (relative/normalized)
+        'bb_width', 'bb_pct', 'atr_pct',
+        # Volume indicators (ratios - stock-independent)
+        'volume_ratio', 'volume_trend',
+        # Price action (returns - stock-independent)
         'price_change_1d', 'price_change_3d', 'price_change_5d', 'price_change_10d',
         'roc_5', 'roc_10', 'hl_ratio', 'close_loc',
-        # MA crossovers
+        # MA crossovers (binary - stock-independent)
         'ema9_21_cross', 'ema21_50_cross', 'price_ema50_cross',
-        # Mean reversion
+        # Mean reversion (relative distance)
         'dist_ema20', 'dist_ema50',
-        # Volatility squeeze
-        'bb_width_pctile', 'atr_pct',
-        # Volume spike
+        # Volatility squeeze (percentile rank)
+        'bb_width_pctile',
+        # Volume spike (ratio)
         'vol_spike',
         # Consecutive direction
         'consec_up', 'consec_down',
         # RSI momentum
         'rsi_roc',
-        # Time features
-        'day_of_week', 'month', 'quarter'
+        # Time features (keep day_of_week only - expiry effects; drop month/quarter - calendar overfitting)
+        'day_of_week'
     ]
 
     X = combined_df[feature_cols]
@@ -288,19 +288,19 @@ def train_model():
         X_test, y_test = X.iloc[test_idx], y.iloc[test_idx]
 
         model = XGBClassifier(
-            n_estimators=300,
-            max_depth=5,
-            learning_rate=0.03,
-            min_child_weight=5,
-            gamma=0.2,
-            subsample=0.75,
-            colsample_bytree=0.7,
-            reg_alpha=0.3,
-            reg_lambda=1.5,
+            n_estimators=500,
+            max_depth=4,
+            learning_rate=0.02,
+            min_child_weight=10,
+            gamma=0.5,
+            subsample=0.7,
+            colsample_bytree=0.6,
+            reg_alpha=1.0,
+            reg_lambda=3.0,
             scale_pos_weight=scale_pos_weight,
             random_state=42,
             eval_metric='logloss',
-            early_stopping_rounds=15
+            early_stopping_rounds=25
         )
 
         eval_set = [(X_val, y_val)]
@@ -330,15 +330,15 @@ def train_model():
 
     print("\nTraining final model on all data...")
     final_model = XGBClassifier(
-        n_estimators=300,
-        max_depth=5,
-        learning_rate=0.03,
-        min_child_weight=5,
-        gamma=0.2,
-        subsample=0.75,
-        colsample_bytree=0.7,
-        reg_alpha=0.3,
-        reg_lambda=1.5,
+        n_estimators=500,
+        max_depth=4,
+        learning_rate=0.02,
+        min_child_weight=10,
+        gamma=0.5,
+        subsample=0.7,
+        colsample_bytree=0.6,
+        reg_alpha=1.0,
+        reg_lambda=3.0,
         scale_pos_weight=scale_pos_weight,
         random_state=42,
         eval_metric='logloss'
