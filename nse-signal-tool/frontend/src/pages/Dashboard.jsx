@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import ReasonModal from '../components/ReasonModal'
+import { buildApiUrl, buildWsUrl } from '../utils/network'
 
 const dedupeSignalsBySymbol = (rows = []) => {
   const bySymbol = new Map()
@@ -51,8 +52,7 @@ const Dashboard = () => {
 
   // WebSocket connection
   useEffect(() => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const ws = new WebSocket(`${protocol}//${window.location.host}/ws/signals`)
+    const ws = new WebSocket(buildWsUrl('/ws/signals'))
 
     ws.onopen = () => {
       console.log('WebSocket connected')
@@ -120,7 +120,7 @@ const Dashboard = () => {
 
         // Open SSE stream — signals arrive one by one
         const symbols = watchlist.map((w) => w.symbol).join(',')
-        const evtSource = new EventSource(`/api/signals/stream?symbols=${encodeURIComponent(symbols)}`)
+        const evtSource = new EventSource(buildApiUrl(`/api/signals/stream?symbols=${encodeURIComponent(symbols)}`))
         sseRef.current = evtSource
 
         evtSource.onmessage = (event) => {
@@ -146,7 +146,7 @@ const Dashboard = () => {
         }
       } catch (err) {
         console.error('Error:', err)
-        setError(`❌ ${err.message} - Backend may not be running on http://localhost:8000`)
+        setError(`❌ ${err.message} - Check backend URL and CORS settings`) 
         setStreamLoading(false)
       }
     }
