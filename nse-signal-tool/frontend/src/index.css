@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
 @layer base {
   /* Dark theme (default) */
   :root, .dark {
@@ -28,13 +30,14 @@
   body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    @apply font-sans antialiased min-h-screen relative;
+    @apply antialiased min-h-screen relative;
+    font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
   }
 
   .dark body, :root body {
     @apply selection:bg-accent-primary/30 selection:text-white;
     background-image: radial-gradient(circle at 15% 50%, rgba(10, 132, 255, 0.04), transparent 25%),
-                      radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.04), transparent 25%);
+                      radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.04), transparent 25%);
   }
 
   .light body {

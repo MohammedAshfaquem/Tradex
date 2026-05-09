@@ -15,7 +15,7 @@ function App() {
         <div className="flex h-screen bg-transparent">
           <Sidebar />
           <main className="flex-1 overflow-auto relative">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.1),rgba(255,255,255,0))] pointer-events-none"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_80%_at_50%_-20%,rgba(59,130,246,0.12),rgba(255,255,255,0))] pointer-events-none"></div>
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/chart/:symbol" element={<ChartView />} />

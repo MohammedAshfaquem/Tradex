@@ -87,6 +87,10 @@ def calculate_indicators(df: pd.DataFrame) -> Dict[str, Any]:
         if 'close' not in df.columns:
             df.columns = [col.lower() for col in df.columns]
 
+        # yfinance can occasionally produce duplicate OHLCV columns; keep first occurrence.
+        if df.columns.duplicated().any():
+            df = df.loc[:, ~df.columns.duplicated(keep='first')]
+
         # RSI(14)
         df['rsi'] = ta.rsi(df['close'], length=14)
         rsi_value = df['rsi'].iloc[-1] if not pd.isna(df['rsi'].iloc[-1]) else 50
@@ -215,20 +219,35 @@ def calculate_indicators(df: pd.DataFrame) -> Dict[str, Any]:
         vwap = 0
         vwap_score = 0
         if 'volume' in df.columns and len(df) > 0:
-            df['typical_price'] = (df['high'] + df['low'] + df['close']) / 3
-            df['vol_tp'] = df['volume'] * df['typical_price']
+            high_col = df['high']
+            low_col = df['low']
+            close_col = df['close']
+            volume_col = df['volume']
+
+            # Defensive handling if any column still resolves to a DataFrame.
+            if isinstance(high_col, pd.DataFrame):
+                high_col = high_col.iloc[:, 0]
+            if isinstance(low_col, pd.DataFrame):
+                low_col = low_col.iloc[:, 0]
+            if isinstance(close_col, pd.DataFrame):
+                close_col = close_col.iloc[:, 0]
+            if isinstance(volume_col, pd.DataFrame):
+                volume_col = volume_col.iloc[:, 0]
+
+            df['typical_price'] = (high_col + low_col + close_col) / 3
+            df['vol_tp'] = volume_col * df['typical_price']
             
             # Check if dataframe has datetime column/index for daily reset
             if 'datetime' in df.columns:
                 date_mask = pd.to_datetime(df['datetime']).dt.date
-                df['cum_vol'] = df.groupby(date_mask)['volume'].cumsum()
+                df['cum_vol'] = volume_col.groupby(date_mask).cumsum()
                 df['cum_vol_tp'] = df.groupby(date_mask)['vol_tp'].cumsum()
             elif hasattr(df.index, 'date'):
-                df['cum_vol'] = df.groupby(df.index.date)['volume'].cumsum()
+                df['cum_vol'] = volume_col.groupby(df.index.date).cumsum()
                 df['cum_vol_tp'] = df.groupby(df.index.date)['vol_tp'].cumsum()
             else:
                 # Fallback to overall cumulative if no date available
-                df['cum_vol'] = df['volume'].cumsum()
+                df['cum_vol'] = volume_col.cumsum()
                 df['cum_vol_tp'] = df['vol_tp'].cumsum()
 
             df['vwap'] = df['cum_vol_tp'] / df['cum_vol']

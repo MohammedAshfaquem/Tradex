@@ -36,6 +36,50 @@ class EmailNotifier:
             "cooldown_minutes": int(os.getenv("ALERT_COOLDOWN_MINUTES", "120")),
         }
 
+    def validate_config(self):
+        cfg = self._config()
+        recipients = self._get_recipients()
+
+        if not cfg["enabled"]:
+            return False, "ALERT_EMAIL_ENABLED is false"
+        if not recipients:
+            return False, "ALERT_EMAIL_TO is empty"
+        if not cfg["smtp_host"]:
+            return False, "SMTP_HOST is missing"
+        if not cfg["smtp_from"]:
+            return False, "SMTP_FROM or SMTP_USERNAME is required"
+        if cfg["smtp_username"] and not cfg["smtp_password"]:
+            return False, "SMTP_PASSWORD is missing"
+        return True, "ok"
+
+    def send_test_email(self):
+        ok, msg = self.validate_config()
+        if not ok:
+            return False, msg
+
+        cfg = self._config()
+        recipients = self._get_recipients()
+        now = datetime.now()
+
+        email = EmailMessage()
+        email["Subject"] = f"TradeX SMTP Test - {now.strftime('%Y-%m-%d %H:%M:%S')}"
+        email["From"] = cfg["smtp_from"]
+        email["To"] = ", ".join(recipients)
+        email.set_content(
+            "This is a test email from TradeX Signal.\n\n"
+            "If you received this, SMTP is configured correctly."
+        )
+
+        try:
+            with smtplib.SMTP(cfg["smtp_host"], cfg["smtp_port"], timeout=15) as server:
+                server.starttls()
+                if cfg["smtp_username"] and cfg["smtp_password"]:
+                    server.login(cfg["smtp_username"], cfg["smtp_password"])
+                server.send_message(email)
+            return True, f"Test email sent to {', '.join(recipients)}"
+        except Exception as exc:
+            return False, f"SMTP error: {exc}"
+
     def send_buy_alert(self, signal_data: Dict):
         cfg = self._config()
         if not cfg["enabled"]:

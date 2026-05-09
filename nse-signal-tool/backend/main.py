@@ -47,6 +47,7 @@ from llm.gemini_reasoner import analyze_signal
 from websocket_manager import ws_manager
 from signals.trend_filter import get_market_trend
 from signals.signal_cooldown import apply_cooldown
+from notifications.email_alerts import email_notifier
 
 # Initialize database
 init_db()
@@ -770,6 +771,15 @@ async def get_news(symbol: str):
         "symbol": symbol.upper(),
         "news": news
     }
+
+
+@app.post("/api/alerts/test-email")
+async def test_email_alert():
+    """Send a one-time SMTP test email using current env configuration."""
+    success, message = email_notifier.send_test_email()
+    if not success:
+        raise HTTPException(status_code=400, detail=message)
+    return {"status": "ok", "message": message}
 
 
 

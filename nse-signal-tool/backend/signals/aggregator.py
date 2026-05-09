@@ -247,15 +247,32 @@ def calculate_volume_metrics(df) -> Dict[str, float]:
         if 'close' not in df.columns:
             df.columns = [col.lower() for col in df.columns]
 
-        current_volume = df['volume'].iloc[-1]
-        avg_volume_20 = df['volume'].iloc[-20:].mean()
+        if df.columns.duplicated().any():
+            df = df.loc[:, ~df.columns.duplicated(keep='first')]
+
+        close_col = df['close']
+        high_col = df['high']
+        low_col = df['low']
+        volume_col = df['volume']
+
+        if isinstance(close_col, pd.DataFrame):
+            close_col = close_col.iloc[:, 0]
+        if isinstance(high_col, pd.DataFrame):
+            high_col = high_col.iloc[:, 0]
+        if isinstance(low_col, pd.DataFrame):
+            low_col = low_col.iloc[:, 0]
+        if isinstance(volume_col, pd.DataFrame):
+            volume_col = volume_col.iloc[:, 0]
+
+        current_volume = volume_col.iloc[-1]
+        avg_volume_20 = volume_col.iloc[-20:].mean()
         volume_ratio = current_volume / avg_volume_20 if avg_volume_20 > 0 else 1.0
-        current_price = df['close'].iloc[-1]
+        current_price = close_col.iloc[-1]
 
         # Calculate ATR (Average True Range)
-        high_low = df['high'] - df['low']
-        high_close = abs(df['high'] - df['close'].shift())
-        low_close = abs(df['low'] - df['close'].shift())
+        high_low = high_col - low_col
+        high_close = abs(high_col - close_col.shift())
+        low_close = abs(low_col - close_col.shift())
         ranges = pd.concat([high_low, high_close, low_close], axis=1)
         true_range = ranges.max(axis=1)
         atr = true_range.iloc[-14:].mean() if len(true_range) >= 14 else current_price * 0.02

@@ -4,6 +4,7 @@ from typing import Literal
 import time
 import random
 import logging
+import threading
 import yfinance as yf
 import requests
 
@@ -25,6 +26,10 @@ _request_delay = 1.5
 _cache = {}
 CACHE_TTL_INTRADAY = 60  # 1 minute expiry for intraday
 CACHE_TTL_DAILY = 3600   # 1 hour expiry for daily data
+_cache_lock = threading.Lock()
+
+# yfinance calls are not fully thread-safe under high parallel load.
+_yf_lock = threading.Lock()
 
 logger = logging.getLogger(__name__)
 
@@ -81,16 +86,17 @@ def _fetch_nse_data(symbol: str, timeframe: str = "1d", days_back: int = 1825, r
             _rate_limit()
 
             # Use yf.download() — more reliable than ticker.history() for batch/cookie issues
-            df = yf.download(
-                yf_symbol,
-                start=start_date,
-                end=end_date,
-                interval=interval,
-                auto_adjust=True,
-                actions=False,
-                progress=False,
-                multi_level_index=False,
-            )
+            with _yf_lock:
+                df = yf.download(
+                    yf_symbol,
+                    start=start_date,
+                    end=end_date,
+                    interval=interval,
+                    auto_adjust=True,
+                    actions=False,
+                    progress=False,
+                    multi_level_index=False,
+                )
 
             if df.empty:
                 if attempt < retries - 1:
@@ -177,12 +183,13 @@ def get_stock_data(symbol: str, timeframe: TimeFrame = "1d", period: str = "3y",
 
     # Check cache first
     cache_key = (symbol, timeframe, period)
-    if cache_key in _cache:
-        timestamp, cached_df = _cache[cache_key]
-        ttl = CACHE_TTL_INTRADAY if timeframe in ["15m", "1h", "4h"] else CACHE_TTL_DAILY
-        if time.time() - timestamp < ttl:
-            print(f"[CACHE] Using cached data for {symbol} ({timeframe})")
-            return cached_df.copy()
+    with _cache_lock:
+        if cache_key in _cache:
+            timestamp, cached_df = _cache[cache_key]
+            ttl = CACHE_TTL_INTRADAY if timeframe in ["15m", "1h", "4h"] else CACHE_TTL_DAILY
+            if time.time() - timestamp < ttl:
+                print(f"[CACHE] Using cached data for {symbol} ({timeframe})")
+                return cached_df.copy()
 
     print(f"[FETCH] Fetching NSE data for {symbol} ({timeframe}, {period})")
 
@@ -218,7 +225,8 @@ def get_stock_data(symbol: str, timeframe: TimeFrame = "1d", period: str = "3y",
         }).dropna()
         df = df.reset_index()
 
-    _cache[cache_key] = (time.time(), df.copy())
+    with _cache_lock:
+        _cache[cache_key] = (time.time(), df.copy())
     return df
 
 
@@ -231,7 +239,8 @@ def get_latest_price(symbol: str, retries: int = 3) -> float:
         try:
             _rate_limit()
             # Use fast_info which is lighter than full .info fetch
-            ticker = yf.Ticker(yf_symbol)
+            with _yf_lock:
+                ticker = yf.Ticker(yf_symbol)
             try:
                 price = ticker.fast_info.get('last_price') or ticker.fast_info.get('regular_market_price')
                 if price:
@@ -240,8 +249,9 @@ def get_latest_price(symbol: str, retries: int = 3) -> float:
                 pass
 
             # Fallback: get last close from 5-day download
-            df = yf.download(yf_symbol, period="5d", interval="1d", progress=False,
-                             auto_adjust=True, multi_level_index=False)
+            with _yf_lock:
+                df = yf.download(yf_symbol, period="5d", interval="1d", progress=False,
+                                 auto_adjust=True, multi_level_index=False)
             if not df.empty and 'Close' in df.columns:
                 return float(df['Close'].iloc[-1])
             elif not df.empty and 'close' in df.columns:
