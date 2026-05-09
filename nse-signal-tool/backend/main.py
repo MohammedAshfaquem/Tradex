@@ -802,10 +802,11 @@ async def websocket_endpoint(websocket: WebSocket):
 async def startup_event():
     """Start background tasks on server startup."""
     import asyncio
+    update_interval = int(os.getenv("WS_UPDATE_INTERVAL", "60"))
 
     # Start WebSocket background updates
-    asyncio.create_task(ws_manager.start_background_updates(interval_seconds=60))
-    print("✓ Started WebSocket background updates")
+    asyncio.create_task(ws_manager.start_background_updates(interval_seconds=update_interval))
+    print(f"✓ Started WebSocket background updates (every {update_interval}s)")
 
 
 if __name__ == "__main__":

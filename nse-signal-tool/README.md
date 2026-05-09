@@ -65,6 +65,15 @@ Frontend (React)
    Edit `.env` and add your Gemini API key:
    ```
    GEMINI_API_KEY=your_actual_key_here
+   ALERT_EMAIL_ENABLED=true
+   ALERT_EMAIL_TO=you@example.com
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_USERNAME=you@gmail.com
+   SMTP_PASSWORD=your_app_password
+   SMTP_FROM=you@gmail.com
+   ALERT_MIN_CONFIDENCE=72
+   ALERT_COOLDOWN_MINUTES=120
    ```
 
    Get a free Gemini API key from: https://aistudio.google.com/app/apikey
@@ -154,6 +163,23 @@ Signals are scored out of 100 points across multiple layers:
 - **BUY** (≥75 points): Strong setup, enter trade
 - **WATCH** (55-74 points): Moderate setup, monitor closely
 - **SKIP** (<55 points): Weak setup, avoid trade
+
+The live engine currently uses:
+
+- **BUY** (≥72 confidence)
+- **WATCH** (55-71 confidence)
+- **SKIP** (36-54 confidence)
+- **SELL** (≤35 confidence)
+
+### What If Confidence Drops After Entry?
+
+Do not exit only because confidence drops from 58 to 50. Use a rule-based trade plan:
+
+- Enter only on BUY signal with your minimum confidence filter.
+- Exit when either stop-loss is hit, target is hit, or a fresh SELL signal appears.
+- If confidence falls but price is above stop-loss and no SELL signal, continue holding.
+
+This avoids emotional exits and keeps decisions consistent.
 
 ## Training Stocks
 

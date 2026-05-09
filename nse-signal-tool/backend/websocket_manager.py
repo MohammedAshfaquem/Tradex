@@ -1,8 +1,9 @@
 from fastapi import WebSocket
-from typing import List, Set
+from typing import List
 import asyncio
 import json
 from datetime import datetime
+from notifications.email_alerts import email_notifier
 
 
 class WebSocketManager:
@@ -71,10 +72,6 @@ class WebSocketManager:
             try:
                 await asyncio.sleep(interval_seconds)
 
-                if not self.active_connections:
-                    # No clients connected, skip
-                    continue
-
                 print(f"[{datetime.now().strftime('%H:%M:%S')}] Generating signals for watchlist...")
 
                 # Get watchlist stocks
@@ -101,16 +98,22 @@ class WebSocketManager:
                 for i, signal_data in enumerate(results):
                     if signal_data and not isinstance(signal_data, Exception):
                         symbol = signal_data['symbol']
+                        new_signal = signal_data.get('signal')
                         # Diffing logic: Broadcast if signal direction changes or confidence changes > 5%
                         prev_signal = self.last_broadcast_signals.get(symbol)
-                        if not prev_signal or prev_signal['signal'] != signal_data['signal'] or abs(prev_signal['confidence'] - signal_data['confidence']) > 5:
+
+                        # Fire email only when signal transitions into BUY.
+                        if new_signal == "BUY" and (not prev_signal or prev_signal.get('signal') != "BUY"):
+                            email_notifier.send_buy_alert(signal_data)
+
+                        if not prev_signal or prev_signal['signal'] != new_signal or abs(prev_signal['confidence'] - signal_data['confidence']) > 5:
                             changed_signals.append(signal_data)
                             self.last_broadcast_signals[symbol] = signal_data
                     elif isinstance(signal_data, Exception):
                         print(f"Error generating signal for {symbols[i]}: {signal_data}")
 
                 # Broadcast only if there are changes
-                if changed_signals:
+                if changed_signals and self.active_connections:
                     await self.broadcast({
                         "type": "signals_update",
                         "timestamp": datetime.now().isoformat(),
