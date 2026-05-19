@@ -22,6 +22,8 @@ def test_feature_creation():
     df = pd.DataFrame(data, index=dates)
     df.index.name = 'datetime'
     
+    # changes test
+    
     features = create_features_for_prediction(df)
     
     print("Generated ML features:", list(features.columns[:5]), "...")
