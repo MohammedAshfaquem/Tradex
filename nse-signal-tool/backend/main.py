@@ -52,12 +52,17 @@ from notifications.email_alerts import email_notifier
 # Initialize database
 init_db()
 
-# Check if model exists, train if not
-model_path = os.path.join(os.path.dirname(__file__), 'ml', 'model.pkl')
-if not os.path.exists(model_path):
-    print("⚠ ML model not found. Training model...")
+
+def _ensure_model_non_blocking() -> None:
+    """Train ML model in a background thread if missing, without blocking app startup."""
+    model_path = os.path.join(os.path.dirname(__file__), 'ml', 'model.pkl')
+    if os.path.exists(model_path):
+        return
+
+    print("⚠ ML model not found. Training model in background...")
     try:
         train_model()
+        print("✓ ML model training completed")
     except Exception as e:
         print(f"❌ Error training model: {e}")
         print("   You can train manually later with: python -m backend.ml.train")
@@ -817,6 +822,9 @@ async def startup_event():
     # Start WebSocket background updates
     asyncio.create_task(ws_manager.start_background_updates(interval_seconds=update_interval))
     print(f"✓ Started WebSocket background updates (every {update_interval}s)")
+
+    # Keep startup responsive for platforms that require quick port detection (e.g., Render)
+    asyncio.create_task(asyncio.to_thread(_ensure_model_non_blocking))
 
 
 if __name__ == "__main__":

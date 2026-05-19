@@ -34,6 +34,18 @@ _yf_lock = threading.Lock()
 logger = logging.getLogger(__name__)
 
 
+def _safe_yf_download(*args, **kwargs) -> pd.DataFrame:
+    """Call yfinance.download with compatibility fallback for older versions."""
+    try:
+        return yf.download(*args, **kwargs)
+    except TypeError as e:
+        # Older yfinance versions do not support multi_level_index.
+        if "multi_level_index" in str(e):
+            kwargs.pop("multi_level_index", None)
+            return yf.download(*args, **kwargs)
+        raise
+
+
 def _rate_limit():
     """Apply rate limiting to prevent API throttling."""
     global _last_request_time
@@ -87,7 +99,7 @@ def _fetch_nse_data(symbol: str, timeframe: str = "1d", days_back: int = 1825, r
 
             # Use yf.download() — more reliable than ticker.history() for batch/cookie issues
             with _yf_lock:
-                df = yf.download(
+                df = _safe_yf_download(
                     yf_symbol,
                     start=start_date,
                     end=end_date,
@@ -250,8 +262,14 @@ def get_latest_price(symbol: str, retries: int = 3) -> float:
 
             # Fallback: get last close from 5-day download
             with _yf_lock:
-                df = yf.download(yf_symbol, period="5d", interval="1d", progress=False,
-                                 auto_adjust=True, multi_level_index=False)
+                df = _safe_yf_download(
+                    yf_symbol,
+                    period="5d",
+                    interval="1d",
+                    progress=False,
+                    auto_adjust=True,
+                    multi_level_index=False,
+                )
             if not df.empty and 'Close' in df.columns:
                 return float(df['Close'].iloc[-1])
             elif not df.empty and 'close' in df.columns:
